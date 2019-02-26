@@ -16,10 +16,7 @@
         "logout"   :logout
         "register" :register
         "settings" :settings
-        "editor/"  {[:slug]    :editor}
-        "article/" {[:slug]    :article}
-        "profile/" {[:user-id] {""           :profile
-                                "/favorites" :favorited}}}])
+        "profile"  :profile}])
 
 ;; -- parse-url ---------------------------------------------------------------
 ;; By using bidi/match-route we convert URL into a data structure and check if 
@@ -33,10 +30,7 @@
 ;; dispatch route and redirect a user
 (defn- dispatch-route
   [matched-route]
-  (dispatch [:set-active-page {:page      (:handler matched-route)
-                               :slug      (get-in matched-route [:route-params :slug])
-                               :profile   (get-in matched-route [:route-params :user-id])
-                               :favorited (get-in matched-route [:route-params :user-id])}]))
+  (dispatch [:set-active-page {:page      (:handler matched-route)}]))
 
 ;; -- Router Start ------------------------------------------------------------
 ;;
