@@ -22,20 +22,25 @@
       (if (empty? user)
         [:ul.nav.navbar-nav.pull-xs-right
          [:li.nav-item
-          [:a.nav-link {:href (url-for :home) :class (when (= active-page :home) "active")} "Home"]]
+          [:a.nav-link {:href (url-for :home) :class (when (= active-page :home) "active")}
+            [:i.ion-home "Home"]]]
          [:li.nav-item
-          [:a.nav-link {:href (url-for :login) :class (when (= active-page :login) "active")} "Sign in"]]
+          [:a.nav-link {:href (url-for :login) :class (when (= active-page :login) "active")}
+            [:i.ion-key "Sign in"]]]
          [:li.nav-item
-          [:a.nav-link {:href (url-for :register) :class (when (= active-page :register) "active")} "Sign up"]]]
+          [:a.nav-link {:href (url-for :register) :class (when (= active-page :register) "active")}
+            [:i.ion-key "Sign up"]]]]
         [:ul.nav.navbar-nav.pull-xs-right
          [:li.nav-item
-          [:a.nav-link {:href (url-for :home) :class (when (= active-page :home) "active")} "Home"]]
+          [:a.nav-link {:href (url-for :home) :class (when (= active-page :home) "active")} 
+            [:i.ion-home "Home"]]]
          [:li.nav-item
           [:a.nav-link {:href (url-for :settings) :class (when (= active-page :settings) "active")}
            [:i.ion-gear-a "Settings"]]]
-         [:li.nav-item
-          [:a.nav-link {:href (url-for :profile :user-id (:username user)) :class (when (= active-page :profile) "active")} (:username user)
-           [:img.user-pic {:src (:image user)}]]]])]]))
+         #_[:li.nav-item
+          [:a.nav-link {:href (url-for :logout)}
+            [:i.ion-key "Logout"]]]]
+           )]]))
 
 ;; -- Footer ------------------------------------------------------------------
 ;;
@@ -148,28 +153,6 @@
                                                     :disabled (when (:register-user loading))}]]
              [:button.btn.btn-lg.btn-primary.pull-xs-right {:class (when (:register-user loading) "disabled")} "Sign up"]]]]]]))))
 
-;; -- Profile -----------------------------------------------------------------
-;;
-(defn profile
-  []
-  (let [{:keys [image username bio] :or {username ""}} @(subscribe [:profile])
-        loading  @(subscribe [:loading])
-        user     @(subscribe [:user])]
-    [:div.profile-page
-     [:div.user-info
-      [:div.container
-       [:div.row
-        [:div.col-xs-12.col-md-10.offset-md-1
-         [:img.user-img {:src image}]
-         [:h4 username]
-         [:p bio]
-         (if (= (:username user) username)
-           [:a.btn.btn-sm.btn-outline-secondary.action-btn {:href (url-for :settings)}
-            [:i.ion-gear-a] " Edit Profile Settings"]
-            )]]]]
-     [:div.container
-         [:h4 user]]]))
-
 ;; -- Settings ----------------------------------------------------------------
 ;;
 (defn logout-user [event]
@@ -182,8 +165,8 @@
 
 (defn settings
   []
-  (let [{:keys [bio email image username] :as user} @(subscribe [:user])
-        default     {:bio bio :email email :image image :username username}
+  (let [{:keys [email username] :as user} @(subscribe [:user])
+        default     {:email email :username username}
         loading     @(subscribe [:loading])
         user-update (reagent/atom default)]
     [:div.settings-page
@@ -194,22 +177,11 @@
         [:form
          [:fieldset
           [:fieldset.form-group
-           [:input.form-control {:type "text"
-                                 :placeholder "URL of profile picture"
-                                 :default-value (:image user)
-                                 :on-change #(swap! user-update assoc :image (-> % .-target .-value))}]]
-          [:fieldset.form-group
            [:input.form-control.form-control-lg {:type "text"
                                                  :placeholder "Your Name"
                                                  :default-value (:username user)
                                                  :on-change #(swap! user-update assoc :username (-> % .-target .-value))
                                                  :disabled (when (:update-user loading))}]]
-          [:fieldset.form-group
-           [:textarea.form-control.form-control-lg {:rows "8"
-                                                    :placeholder "Short bio about you"
-                                                    :default-value (:bio user)
-                                                    :on-change #(swap! user-update assoc :bio (-> % .-target .-value))
-                                                    :disabled (when (:update-user loading))}]]
           [:fieldset.form-group
            [:input.form-control.form-control-lg {:type "text"
                                                  :placeholder "Email"
@@ -232,7 +204,6 @@
     :home     [home]
     :login    [login]
     :register [register]
-    :profile  [profile]
     :settings [settings]
     [home]))
 

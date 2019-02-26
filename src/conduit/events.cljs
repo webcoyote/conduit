@@ -71,26 +71,6 @@
  (fn-traced [{:keys [db]} [_ {:keys [page]}]]
   {:db (assoc db :active-page page)}))
 
-;; -- GET Profile @ /api/profiles/:username -----------------------------------
-;;
-(reg-event-fx                          ;; usage (dispatch [:get-user-profile {:profile "profile"}])
- :get-user-profile                     ;; triggered when the profile page is loaded
- (fn-traced [{:keys [db]} [_ params]]  ;; params = {:profile "profile"}
-            {:db         (assoc-in db [:loading :profile] true)
-             :http-xhrio {:method          :get
-                          :uri             (endpoint "profiles" (:profile params))    ;; evaluates to "api/profiles/:profile"
-                          :headers         (auth-header db)                           ;; get and pass user token obtained during login
-                          :response-format (json-response-format {:keywords? true})   ;; json response and all keys to keywords
-                          :on-success      [:get-user-profile-success]                ;; trigger get-user-profile-success
-                          :on-failure      [:api-request-error :get-user-profile]}})) ;; trigger api-request-error with :get-user-profile
-
-(reg-event-db
- :get-user-profile-success
- (fn-traced [db [_ {profile :profile}]]
-            (-> db
-                (assoc-in [:loading :profile] false)
-                (assoc :profile profile))))
-
 ;; -- POST Login @ /api/users/login -------------------------------------------
 ;;
 (reg-event-fx                              ;; usage (dispatch [:login user])
@@ -161,11 +141,11 @@
 ;;
 (reg-event-fx                       ;; usage (dispatch [:update-user user])
  :update-user                       ;; triggered when a users updates settgins
- (fn-traced [{:keys [db]} [_ user]] ;; user = {:img ... :username ... :bio ... :email ... :password ...}
+ (fn-traced [{:keys [db]} [_ user]] ;; user = {:username ... :email ... }
             {:db         (assoc-in db [:loading :update-user] true)
              :http-xhrio {:method          :put
                           :uri             (endpoint "user")                        ;; evaluates to "api/user"
-                          :params          {:user user}                             ;; {:user {:img ... :username ... :bio ... :email ... :password ...}}
+                          :params          {:user user}                             ;; {:user {:username ... :email ...}}
                           :headers         (auth-header db)                         ;; get and pass user token obtained during login
                           :format          (json-request-format)                    ;; make sure our request is json
                           :response-format (json-response-format {:keywords? true}) ;; json response and all keys to keywords

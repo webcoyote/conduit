@@ -15,8 +15,7 @@
         "login"    :login
         "logout"   :logout
         "register" :register
-        "settings" :settings
-        "profile"  :profile}])
+        "settings" :settings}])
 
 ;; -- parse-url ---------------------------------------------------------------
 ;; By using bidi/match-route we convert URL into a data structure and check if 

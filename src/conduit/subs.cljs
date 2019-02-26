@@ -7,11 +7,6 @@
    (:active-page db)))  ;; extract a value from the application state
 
 (reg-sub
- :profile  ;; usage: (subscribe [:profile])
- (fn [db _]
-   (:profile db)))
-
-(reg-sub
  :loading  ;; usage: (subscribe [:loading])
  (fn [db _]
    (:loading db)))
